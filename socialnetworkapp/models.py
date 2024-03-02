@@ -7,6 +7,12 @@ class User(models.Model):
     password = models.CharField(max_length=128)
     email = models.EmailField(max_length=254, unique=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    
+    def subscriptions_count(self):
+        return self.subscriptions.count()
+
+    def subscribers_count(self):
+        return self.subscribers.count()
 
 
 class Post(models.Model):
