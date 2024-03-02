@@ -10,9 +10,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
-        data = request.data.copy()
-        data['date_joined'] = datetime.datetime.now() 
-        serializer = self.get_serializer(data=data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -33,3 +31,16 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Вы уже подписаны на этого пользователя.'}, status=status.HTTP_400_BAD_REQUEST)
         
         return super().create(request, *args, **kwargs)
+    
+    def retrieve(self, request, *args, **kwargs):
+        instanse = self.get_object()
+        serializer = self.get_serializer(instanse)
+        data = serializer.data
+        
+        subscriber_username = instanse.subscriber.username
+        subscribed_to_username = instanse.subscribed_to.username
+        
+        data['subscriber'] = subscriber_username
+        data['subscribed_to'] = subscribed_to_username
+        
+        return Response(data)
